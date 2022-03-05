@@ -1,0 +1,11 @@
+FROM gcc as build
+WORKDIR /client
+COPY . /client
+RUN mkdir -p target/data
+RUN gcc -Wall -DLOG_USE_COLOR -o target/app libraries/byte_array.c libraries/netio.c libraries/log.c interpreters/client_interpreter.c client.c
+
+# stage 2 - build the final image and copy the react build files
+FROM ubuntu
+WORKDIR /client
+COPY --from=build /client/target /client
+CMD ["./app"]
